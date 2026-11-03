@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Send plain prop values that respond to `deferred?`, `once?` or `rescue?` as data instead of treating them as prop types, and skip those checks for plain values (@thomasklemm)
+* Copy plain prop values without building their paths when no partial reload or DevTools recording needs them (@thomasklemm)
 
 ## [3.23.0] - 2026-10-16
 

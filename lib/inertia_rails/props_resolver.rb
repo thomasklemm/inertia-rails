@@ -86,7 +86,15 @@ module InertiaRails
     end
 
     def deep_transform_props(props, prefix = '', parent_was_resolved: false)
+      plain_leaves = @recorder.nil? && (parent_was_resolved || !filtering_partial_request?)
+
       props.each_with_object({}) do |(key, prop), transformed_props|
+        # Plain data needs no path, metadata or evaluation unless a partial reload or DevTools looks at it.
+        if plain_leaves && plain_leaf?(prop)
+          transformed_props[key] = prop
+          next
+        end
+
         path = prefix.empty? ? key.to_s : "#{prefix}.#{key}"
 
         if self.class.serializer?(prop)
@@ -192,6 +200,13 @@ module InertiaRails
     def serialize(serializer, path)
       @recorder&.serializer_found(serializer, path)
       serializer.to_inertia
+    end
+
+    def plain_leaf?(value)
+      case value
+      when BaseProp, Proc, Hash, Array then false
+      else !self.class.serializer?(value)
+      end
     end
 
     def needs_transform?(value)
